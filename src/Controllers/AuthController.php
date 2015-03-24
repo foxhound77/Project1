@@ -11,8 +11,10 @@
  */
 
 namespace Controllers;
-
-
+use Common\Authentication\InMemory;
+use Common\Authentication\FileBased;
+use Common\Authentication\MysqlMemory;
+use Common\Authentication\Sqlite;
 /**
  * Class AuthController
  */
@@ -27,8 +29,27 @@ class AuthController extends Controller
     {
         $postData = $this->request->getPost();
 
-        echo 'Authenticate the above two different ways' . var_dump($postData);
-
-        // example code: $auth = new Authentication($postData['username'], $postData['password']);
+        //echo 'Authenticate the above two different ways' . var_dump($postData). "<br/>";
+		
+		if($postData->auth === 'inFile')
+		{
+			$fileMemory = new FileBased();
+			$fileMemory->authenticate($postData->username, $postData->password);
+		}
+		else if($postData->auth === 'inMemory')
+		{
+			$memory = new InMemory();
+			$memory->authenticate($postData->username, $postData->password);
+		}
+		else if($postData->auth === 'inSqlite')
+		{
+			$memory = new Sqlite();
+			$memory->authenticate($postData->username, $postData->password);
+		}
+		else
+		{
+			$mysql = new MysqlMemory();
+			$mysql->authenticate($postData->username, $postData->password);
+		}
     }
 }
